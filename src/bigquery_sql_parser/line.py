@@ -2,7 +2,7 @@ import re
 
 
 class Line:
-    def __init__(self, content: str):
+    def __init__(self, content):
         self.content = content
 
     @property
