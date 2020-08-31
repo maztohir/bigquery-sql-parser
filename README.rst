@@ -51,9 +51,9 @@ Overview
     :alt: Supported implementations
     :target: https://pypi.org/project/bigquery-sql-parser
 
-.. |commits-since| image:: https://img.shields.io/github/commits-since/maztohir/bigquery-sql-parser/vv0.0.2..svg
+.. |commits-since| image:: https://img.shields.io/github/commits-since/maztohir/bigquery-sql-parser/v0.0.2.svg
     :alt: Commits since latest release
-    :target: https://github.com/maztohir/bigquery-sql-parser/compare/vv0.0.2....master
+    :target: https://github.com/maztohir/bigquery-sql-parser/compare/v0.0.2...master
 
 
 
