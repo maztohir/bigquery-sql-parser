@@ -25,7 +25,7 @@ def read(*names, **kwargs):
 
 setup(
     name='bigquery-sql-parser',
-    version='0.0.0',
+    version='0.0.2',
     license='MIT',
     description='Work out of the box to understand and modify your bigquery sql programatically',
     long_description='%s\n%s' % (
