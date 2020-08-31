@@ -21,7 +21,7 @@ project = 'Bigquery SQL parser'
 year = '2020'
 author = 'Muhamad Tohir'
 copyright = '{0}, {1}'.format(year, author)
-version = release = 'version = release = '0.0.2''
+version = release = '0.0.2'
 
 pygments_style = 'trac'
 templates_path = ['.']
