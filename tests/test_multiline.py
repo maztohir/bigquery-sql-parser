@@ -1,5 +1,5 @@
-from bigquery_sql_parser.multiline import Multiline
 from bigquery_sql_parser.line import Line
+from bigquery_sql_parser.multiline import Multiline
 
 syntax = """select
     column
