@@ -3,29 +3,37 @@ import re
 from .multiline import Multiline
 
 
-class QueryRef(Multiline):
+class Query(Multiline):
     def __init__(self, syntax):
         super().__init__(syntax)
-        self._map = {}
 
     @property
-    def _unseparated_column(self):
-        UNSEPARATED_COLUMN = (
-            r"(?i)(?:\s*select\s+)((?:(?!\s+from\s+)[\S\s])*)(?:\s+from\s*)?"
-        )
+    def _column_area(self):
+        UNSEPARATED_COLUMN = r"(?i)(?:\s*select\s+)((?:(?![,\s]+from[`\s]+)[\S\s])*)(?:,?[,\s]+from[`\s]+)?"
         matches = re.findall(UNSEPARATED_COLUMN, self.syntax)
+        if len(matches) > 1:
+            raise ValueError("Query should contain only 1 SELECT statement")
+
         if matches:
-            return matches[0]
-        return ""
+            column_area = matches[0]
+            return self._remove_unused_character(column_area)
+
+        else:
+            raise ValueError("SELECT statment not found")
 
     @property
-    def columns(self):
-        SEPARATED_COLUMN = r"([\.\w]+)"
-        matches = re.findall(SEPARATED_COLUMN, self._unseparated_column)
+    def _column_names(self):
+        SEPARATED_COLUMN = r"(?i)(?!\s)([\w+\s\+\*\-\.]+)"
+        matches = re.findall(SEPARATED_COLUMN, self._column_area)
         return matches
 
     @property
     def full_table_ids(self):
-        TABLE_PATTERN = r"(?i)(?:FROM|JOIN)\\s+`?([\\w-]+)\\.([\\w-]+)\\.(\\w+)`?"
-        matches = re.findall(TABLE_PATTERN, self.query)
+        TABLE_PATTERN = r"(?i)(?:FROM|JOIN)\s+`?([\w-]+)\.([\w-]+)\.(\w+)"
+        matches = re.findall(TABLE_PATTERN, self.syntax)
         return [f"{match[0]}.{match[1]}.{match[2]}" for match in matches]
+
+    def _remove_unused_character(self, syntax):
+        UNUSED_CHARACTER_PATTERN = r"(?:[,\s]*)$"
+        result = re.sub(UNUSED_CHARACTER_PATTERN, "", syntax)
+        return result
