@@ -2,7 +2,7 @@ import re
 from .utils import hash_string
 
 
-class Tokenizer:
+class Tokenizer(object):
     def __init__(self, syntax, prefix="BQ00012_"):
         self.syntax = syntax
         self.prefix = prefix
@@ -46,7 +46,7 @@ class Tokenizer:
         return lowest
 
     def _find_keys(self, syntax):
-        KEY_PATTERN = rf"({self.prefix}\w+)"
+        KEY_PATTERN = r"({}\w+)".format(self.prefix)
         matches = re.findall(KEY_PATTERN, syntax)
         return matches
 

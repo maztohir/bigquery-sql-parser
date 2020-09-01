@@ -1,7 +1,7 @@
 from .line import Line
 
 
-class Multiline:
+class Multiline(object):
     def __init__(self, syntax):
         lines_split = syntax.split("\n")
         self.lines = [Line(line) for line in lines_split]

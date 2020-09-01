@@ -5,7 +5,7 @@ from .multiline import Multiline
 
 class Query(Multiline):
     def __init__(self, syntax):
-        super().__init__(syntax)
+        super(Query, self).__init__(syntax)
 
     @property
     def _column_area(self):
@@ -31,7 +31,7 @@ class Query(Multiline):
     def full_table_ids(self):
         TABLE_PATTERN = r"(?i)(?:FROM|JOIN)\s+`?([\w-]+)\.([\w-]+)\.(\w+)"
         matches = re.findall(TABLE_PATTERN, self.syntax)
-        return [f"{match[0]}.{match[1]}.{match[2]}" for match in matches]
+        return ["{}.{}.{}".format(match[0], match[1], match[2]) for match in matches]
 
     def _remove_unused_character(self, syntax):
         UNUSED_CHARACTER_PATTERN = r"(?:[,\s]*)$"

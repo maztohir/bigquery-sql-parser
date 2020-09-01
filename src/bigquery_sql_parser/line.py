@@ -1,7 +1,7 @@
 import re
 
 
-class Line:
+class Line(object):
     def __init__(self, syntax, identation=""):
         self.syntax = identation + syntax
 
