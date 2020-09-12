@@ -24,7 +24,7 @@ def test_column_area_with_from():
 def test_columns():
     syntax = "select name, johan, adi* raka cika, street as street_name from `table`"
     query = Query(syntax)
-    assert query._column_names == [
+    assert query._column_syntax == [
         "name",
         "johan",
         "adi* raka cika",

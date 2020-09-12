@@ -22,7 +22,7 @@ class Query(Multiline):
             raise ValueError("SELECT statment not found")
 
     @property
-    def _column_names(self):
+    def _column_syntax(self):
         SEPARATED_COLUMN = r"(?i)(?!\s)([\w+\s\+\*\-\.]+)"
         matches = re.findall(SEPARATED_COLUMN, self._column_area)
         return matches
