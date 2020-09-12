@@ -52,3 +52,28 @@ def test_not_found_select_statement():
     with pytest.raises(ValueError) as e:
         query._column_area
     assert str(e.value) == "SELECT statment not found"
+
+
+def test_query_columns():
+    syntax = """
+    SELECT 
+        name,
+        addresses address,
+        62 + phone as phone_number,
+        2020 - birth_year year_old
+    FROM table_id
+    """
+    query = Query(syntax)
+    columns = query.columns
+    column_names = [column.name for column in columns]
+    column_values = [column.value for column in columns]
+    column_syntax = [column.syntax for column in columns]
+
+    assert column_names == ["name", "address", "phone_number", "year_old"]
+    assert column_values == ["name", "addresses", "62 + phone", "2020 - birth_year"]
+    assert column_syntax == [
+        "name",
+        "addresses address",
+        "62 + phone as phone_number",
+        "2020 - birth_year year_old",
+    ]

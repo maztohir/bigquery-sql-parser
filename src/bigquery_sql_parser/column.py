@@ -23,13 +23,9 @@ class Column(object):
         VALUE_ANONYMOUS_AS_PATTERN = r"(.*)(?:\s+)"
 
         if re.findall(CHECK_AS_PATTERN, self.syntax):
-            print(self.syntax)
-            print("match CHECK_AS_PATTERN")
             matches = re.findall(VALUE_AS_PATTERN, self.syntax)
             return matches[0]
-        elif re.match(CHECK_ANONYMOUS_AS_PATTERN, self.syntax):
-            print(self.syntax)
-            print("match CHECK_ANONYMOUS_AS_PATTERN")
+        elif re.findall(CHECK_ANONYMOUS_AS_PATTERN, self.syntax):
             matches = re.findall(VALUE_ANONYMOUS_AS_PATTERN, self.syntax)
             return matches[0]
         else:

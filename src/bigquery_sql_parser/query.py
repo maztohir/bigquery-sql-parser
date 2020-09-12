@@ -1,6 +1,7 @@
 import re
 
 from .multiline import Multiline
+from .column import Column
 
 
 class Query(Multiline):
@@ -27,13 +28,19 @@ class Query(Multiline):
         matches = re.findall(SEPARATED_COLUMN, self._column_area)
         return matches
 
+    def _remove_unused_character(self, syntax):
+        UNUSED_CHARACTER_PATTERN = r"(?:[,\s]*)$"
+        result = re.sub(UNUSED_CHARACTER_PATTERN, "", syntax)
+        return result
+
     @property
     def full_table_ids(self):
         TABLE_PATTERN = r"(?i)(?:FROM|JOIN)\s+`?([\w-]+)\.([\w-]+)\.(\w+)"
         matches = re.findall(TABLE_PATTERN, self.syntax)
         return ["{}.{}.{}".format(match[0], match[1], match[2]) for match in matches]
 
-    def _remove_unused_character(self, syntax):
-        UNUSED_CHARACTER_PATTERN = r"(?:[,\s]*)$"
-        result = re.sub(UNUSED_CHARACTER_PATTERN, "", syntax)
-        return result
+    @property
+    def columns(self):
+        column_syntaxes = self._column_syntax
+        columns = [Column(syntax) for syntax in column_syntaxes]
+        return columns
