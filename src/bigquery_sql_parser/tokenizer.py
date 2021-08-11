@@ -1,7 +1,15 @@
-import re
+from __future__ import annotations
+from typing import List
 
 from .utils import hash_string
 
+import re
+class TokenizedSyntax:
+    def __init__(self, text:str, keys:List[str], knowledge:dict, child:List[TokenizedSyntax]) -> None:
+        self.text = text
+        self.keys = keys
+        self.knowledge = knowledge
+        self.child = child
 
 class Tokenizer:
     def __init__(self, syntax, prefix="BQ00012_"):
@@ -25,7 +33,7 @@ class Tokenizer:
         return syntax
 
     def _find_parenthesis(self, syntax):
-        FIND_PARENTHESIS_PATTERN = r"\w*\((?:[^()]*|\([^.]*\))*\)"
+        FIND_PARENTHESIS_PATTERN = r"\w*\((?:[^()]|\([^.]*\))*\)"
         return re.findall(
             FIND_PARENTHESIS_PATTERN, self._remove_first_and_last_parenthesis(syntax)
         )
