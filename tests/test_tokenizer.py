@@ -1,13 +1,13 @@
 from src.bigquery_sql_parser.tokenizer import Tokenizer
 
-syntax = """select
+text = """select
     name,
     cast(phone as int) table
   from
     (select * peoples)
 """
 
-tokenized_syntax = """select
+tokenized_text = """select
     name,
     BQ00012_fc622415e32281f9f844a3e1cebcfefe table
   from
@@ -16,11 +16,11 @@ tokenized_syntax = """select
 
 
 def test_token():
-    tokenizer = Tokenizer(syntax, prefix="BQ00012_")
-    assert tokenizer.tokenized_syntax == tokenized_syntax
+    tokenizer = Tokenizer(text, prefix="BQ00012_")
+    assert tokenizer.tokenized_text == tokenized_text
 
 
-nested_syntax = """select
+nested_text = """select
     name,
     cast(phone as int) table
   from
@@ -32,7 +32,7 @@ nested_syntax = """select
       ) as peoples
     )"""
 
-tokenized_nested_syntax = """select
+tokenized_nested_text = """select
     name,
     BQ00012_fc622415e32281f9f844a3e1cebcfefe table
   from
@@ -40,12 +40,12 @@ tokenized_nested_syntax = """select
 
 
 def test_nested_token():
-    tokenizer = Tokenizer(nested_syntax, prefix="BQ00012_")
-    assert tokenizer.tokenized_syntax == tokenized_nested_syntax
+    tokenizer = Tokenizer(nested_text, prefix="BQ00012_")
+    assert tokenizer.tokenized_text == tokenized_nested_text
 
 
 def test_translate_key():
-    tokenizer = Tokenizer(nested_syntax, prefix="BQ00012_")
+    tokenizer = Tokenizer(nested_text, prefix="BQ00012_")
     assert (
         tokenizer.translate_key("BQ00012_fc622415e32281f9f844a3e1cebcfefe")
         == "cast(phone as int)"
@@ -53,7 +53,7 @@ def test_translate_key():
 
 
 def test_translate_recursive_key():
-    tokenizer = Tokenizer(nested_syntax, prefix="BQ00012_")
+    tokenizer = Tokenizer(nested_text, prefix="BQ00012_")
     assert (
         tokenizer.translate_key(
             "BQ00012_79408cebe73fc48d4af93f6222881dcb", recursive=True
@@ -68,6 +68,6 @@ def test_translate_recursive_key():
     )
 
 
-def test_reverse_syntaxx():
-    tokenizer = Tokenizer(nested_syntax, prefix="BQ00012_")
-    assert tokenizer._translate_syntax(tokenized_nested_syntax) == nested_syntax
+def test_reverse_text():
+    tokenizer = Tokenizer(nested_text, prefix="BQ00012_")
+    assert tokenizer._translate_text(tokenized_nested_text) == nested_text

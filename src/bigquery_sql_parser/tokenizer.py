@@ -4,7 +4,7 @@ from typing import List
 from .utils import hash_string
 
 import re
-class TokenizedSyntax:
+class Token:
     def __init__(self, text:str, keys:List[str], knowledge:dict, child:List[TokenizedSyntax]) -> None:
         self.text = text
         self.keys = keys
@@ -12,10 +12,10 @@ class TokenizedSyntax:
         self.child = child
 
 class Tokenizer:
-    def __init__(self, syntax, prefix="BQ00012_"):
-        self.syntax = syntax
+    def __init__(self, text, prefix="BQ00012_"):
+        self.text = text
         self.prefix = prefix
-        self.tokenized_syntax, self.knowledge = self._tokenize(syntax)
+        self.tokenized_text, self.knowledge = self._tokenize(text)
 
     def translate_key(self, key, recursive=False):
         value = self.knowledge[key]
@@ -27,26 +27,26 @@ class Tokenizer:
                 )
         return value
 
-    def _remove_first_and_last_parenthesis(self, syntax):
-        if syntax.startswith("(") and syntax.endswith(")"):
-            syntax = syntax[1:-1]
-        return syntax
+    def _remove_first_and_last_parenthesis(self, text):
+        if text.startswith("(") and text.endswith(")"):
+            text = text[1:-1]
+        return text
 
-    def _find_parenthesis(self, syntax):
+    def _find_parenthesis(self, text):
         FIND_PARENTHESIS_PATTERN = r"\w*\((?:[^()]|\([^.]*\))*\)"
         return re.findall(
-            FIND_PARENTHESIS_PATTERN, self._remove_first_and_last_parenthesis(syntax)
+            FIND_PARENTHESIS_PATTERN, self._remove_first_and_last_parenthesis(text)
         )
 
-    def _find_lowest_parenthesis(self, syntax):
+    def _find_lowest_parenthesis(self, text):
         lowest = []
-        matches = self._find_parenthesis(syntax)
+        matches = self._find_parenthesis(text)
 
         if not matches:
-            lowest.append(syntax)
+            lowest.append(text)
 
         for match in matches:
-            if match == syntax:
+            if match == text:
                 lowest.append(match)
             else:
                 _lowest = self._find_lowest_parenthesis(match)
@@ -54,25 +54,25 @@ class Tokenizer:
 
         return lowest
 
-    def _find_keys(self, syntax):
+    def _find_keys(self, text):
         KEY_PATTERN = r"({}\w+)".format(self.prefix)
-        matches = re.findall(KEY_PATTERN, syntax)
+        matches = re.findall(KEY_PATTERN, text)
         return matches
 
-    def _translate_syntax(self, syntax):
-        keys = self._find_keys(syntax)
+    def _translate_text(self, text):
+        keys = self._find_keys(text)
         for key in keys:
-            syntax = syntax.replace(key, self.translate_key(key, recursive=True))
-        return syntax
+            text = text.replace(key, self.translate_key(key, recursive=True))
+        return text
 
-    def _tokenize(self, syntax):
+    def _tokenize(self, text):
         knowledge = {}
 
-        while self._find_parenthesis(syntax):
-            lowests = self._find_lowest_parenthesis(syntax)
+        while self._find_parenthesis(text):
+            lowests = self._find_lowest_parenthesis(text)
             for lowest in lowests:
                 token = self.prefix + hash_string(lowest)
                 knowledge[token] = lowest
-                syntax = syntax.replace(lowest, token)
+                text = text.replace(lowest, token)
 
-        return syntax, knowledge
+        return text, knowledge
