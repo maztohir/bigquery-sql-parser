@@ -4,12 +4,13 @@ from typing import List
 from .utils import hash_string
 
 import re
-class Token:
-    def __init__(self, text:str, keys:List[str], knowledge:dict, child:List[TokenizedSyntax]) -> None:
-        self.text = text
+class TokenizedSyntax:
+    def __init__(self, tokenized_text:str, translated_text:str, keys:List[str], knowledge:dict, childs:List[TokenizedSyntax]) -> None:
+        self.translated_text = translated_text
+        self.tokenized_text = tokenized_text
         self.keys = keys
         self.knowledge = knowledge
-        self.child = child
+        self.childs = childs
 
 class Tokenizer:
     def __init__(self, text, prefix="BQ00012_"):
@@ -23,7 +24,7 @@ class Tokenizer:
             sub_keys = self._find_keys(value)
             for sub_key in sub_keys:
                 value = value.replace(
-                    sub_key, self.translate_key(sub_key, recursive=True)
+                    sub_key, self.translate_key(sub_key, recursive=recursive)
                 )
         return value
 
@@ -64,6 +65,31 @@ class Tokenizer:
         for key in keys:
             text = text.replace(key, self.translate_key(key, recursive=True))
         return text
+    
+    def _extract_key(self, key, recursive=False) -> TokenizedSyntax:
+        value = self.knowledge[key]
+        translated = self._translate_text(value)
+        keys = self._find_keys(value)
+        knowledges = { key: self.knowledge[key] for key in keys }
+        childs = []
+
+        if recursive:
+            for sub_key in keys:
+                child = self._extract_key(sub_key, recursive=recursive)
+                childs.append(child)
+        return TokenizedSyntax(value, translated, keys, knowledges, childs)
+    
+    @property
+    def tokenized_syntax(self):
+        tokenized_text = self.tokenized_text
+        translated = self._translate_text(tokenized_text)
+        keys = self._find_keys(tokenized_text)
+        knowledges = { key: self.knowledge[key] for key in keys }
+        childs = []
+        for sub_key in keys:
+            child = self._extract_key(sub_key, recursive=True)
+            childs.append(child)
+        return TokenizedSyntax(tokenized_text, translated, keys, knowledges, childs)        
 
     def _tokenize(self, text):
         knowledge = {}
