@@ -1,4 +1,4 @@
-from bigquery_sql_parser.column import Column
+from src.bigquery_sql_parser.column import Column
 
 
 def test_alias_name():

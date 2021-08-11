@@ -1,4 +1,4 @@
-from bigquery_sql_parser.line import Line
+from src.bigquery_sql_parser.line import Line
 
 
 def test_identation():

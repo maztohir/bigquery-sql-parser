@@ -1,4 +1,4 @@
-from bigquery_sql_parser.tokenizer import Tokenizer
+from src.bigquery_sql_parser.tokenizer import Tokenizer
 
 syntax = """select
     name,
