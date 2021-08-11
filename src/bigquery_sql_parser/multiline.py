@@ -3,13 +3,13 @@ from .line import Line
 
 
 class Multiline:
-    def __init__(self, syntax):
-        lines_split = syntax.split("\n")
+    def __init__(self, text):
+        lines_split = text.split("\n")
         self.lines = [Line(line) for line in lines_split]
 
     @property
-    def syntax(self):
-        return "\n".join([line.syntax for line in self.lines])
+    def text(self):
+        return "\n".join([line.text for line in self.lines])
 
     def get(self, index) -> Line:
         return self.lines[index]

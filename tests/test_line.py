@@ -34,4 +34,4 @@ def test_add_comma():
 
     line = Line(string)
     line.add_comma()
-    assert line.syntax == "select name,"
+    assert line.text == "select name,"
