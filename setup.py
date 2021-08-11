@@ -8,12 +8,12 @@ setuptools.setup(
     version="0.1.4",
     author="Muhamad Tohir",
     author_email="maztohir@gmail.com",
-    description="Python library to work with complicated nested dict",
+    description="Simple and out of the box Bigquery SQL Parser for python. Convert your SQL into python object which you can modify programatically.",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/maztohir/python-nested-dict",
+    url="https://github.com/maztohir/bigquery-sql-parser",
     project_urls={
-        "Bug Tracker": "https://github.com/maztohir/python-nested-dict/issues",
+        "Bug Tracker": "https://github.com/maztohir/bigquery-sql-parser/issues",
     },
     classifiers=[
         "Programming Language :: Python :: 3",
