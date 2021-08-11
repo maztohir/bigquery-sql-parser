@@ -1,12 +1,12 @@
 import re
 
 
-class Line(object):
+class Line:
     def __init__(self, syntax, identation=""):
         self.syntax = identation + syntax
 
     @property
-    def identation(self):
+    def indentation(self):
         matches = re.match(r"^\s+", self.syntax)
         if matches:
             return matches.group(0)
@@ -14,7 +14,9 @@ class Line(object):
 
     @property
     def is_from_clause(self):
-        return "from" in self.syntax.lower()
+        matches_normal = re.match(r'(?i)[\s,`\'\"]+from[\s,`\'\"]+', self.syntax)
+        matches_first_line = re.match(r'(?i)^from[\s,`\'\"]+', self.syntax)
+        return True if (matches_normal or matches_first_line) else False
 
     @property
     def is_select_clause(self):

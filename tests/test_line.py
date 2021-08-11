@@ -1,19 +1,18 @@
 from src.bigquery_sql_parser.line import Line
 
 
-def test_identation():
+def test_indentation():
     string = "    column_name"
 
     line = Line(string)
-    assert len(line.identation) == 4
+    assert len(line.indentation) == 4
 
 
-def test_no_identation():
+def test_no_indentation():
     string = "column_name"
 
     line = Line(string)
-    assert len(line.identation) == 0
-
+    assert len(line.indentation) == 0
 
 def test_from_clause():
     string = "  from table"

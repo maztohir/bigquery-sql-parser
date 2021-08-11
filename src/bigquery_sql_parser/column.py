@@ -1,7 +1,7 @@
 import re
 
 
-class Column(object):
+class Column:
     def __init__(self, syntax):
         self.syntax = syntax
 

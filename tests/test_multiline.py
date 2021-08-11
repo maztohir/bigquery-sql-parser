@@ -26,3 +26,11 @@ def test_add_line():
     multi.add(Line("    order by 1"))
 
     assert multi.syntax == syntax_result
+    
+def test_add_line():
+    multi = Multiline(syntax)
+    multi.add(Line("    column1"), 2)
+    # indent = multi.get()
+    multi.add("order by 1", auto_indent=True)
+
+    assert multi.syntax == syntax_result

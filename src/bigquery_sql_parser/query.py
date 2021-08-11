@@ -1,4 +1,5 @@
 import re
+from typing import List
 
 from .multiline import Multiline
 from .column import Column
@@ -40,7 +41,7 @@ class Query(Multiline):
         return ["{}.{}.{}".format(match[0], match[1], match[2]) for match in matches]
 
     @property
-    def columns(self):
+    def columns(self) -> List[Column]:
         column_syntaxes = self._column_syntax
         columns = [Column(syntax) for syntax in column_syntaxes]
         return columns

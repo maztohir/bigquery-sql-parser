@@ -3,7 +3,7 @@ import re
 from .utils import hash_string
 
 
-class Tokenizer(object):
+class Tokenizer:
     def __init__(self, syntax, prefix="BQ00012_"):
         self.syntax = syntax
         self.prefix = prefix
