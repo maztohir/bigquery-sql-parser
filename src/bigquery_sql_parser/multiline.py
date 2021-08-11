@@ -4,7 +4,7 @@ from .line import Line
 
 
 class Multiline:
-    def __init__(self, text):
+    def __init__(self, text:str):
         lines_split = text.split("\n")
         self.lines = [Line(line) for line in lines_split]
 

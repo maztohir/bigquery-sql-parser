@@ -2,7 +2,7 @@ import re
 
 
 class Column:
-    def __init__(self, syntax):
+    def __init__(self, syntax:str):
         self.syntax = syntax
 
     @property

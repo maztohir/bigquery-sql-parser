@@ -6,7 +6,7 @@ from .column import Column
 
 
 class Query(Multiline):
-    def __init__(self, text):
+    def __init__(self, text:str):
         super(Query, self).__init__(text)
 
     @property

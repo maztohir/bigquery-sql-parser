@@ -2,7 +2,7 @@ import re
 
 
 class Line:
-    def __init__(self, text, indentation=""):
+    def __init__(self, text:str, indentation:str=""):
         self._text = indentation + text
         self._indentation = self._get_indent(text)
         self._syntax = self._get_syntax(text)
