@@ -2,8 +2,10 @@ import re
 
 
 class Line:
-    def __init__(self, text, identation=""):
-        self._text = identation + text
+    def __init__(self, text, indentation=""):
+        self._text = indentation + text
+        self._indentation = self._get_indent(text)
+        self._syntax = self._get_syntax(text)
 
     @property
     def text(self):
@@ -12,22 +14,36 @@ class Line:
     @text.setter
     def text(self, value):
         self._text = value
+        self._indentation = self._get_indent(value)
+        self._syntax = self._get_syntax(value)
         
     @property
     def syntax(self):
-        return re.sub(r"^\s+", "", self._text)
+        return self._syntax
     
     @syntax.setter
     def syntax(self, value):
-        self._text = self.indentation + value
+        self._syntax = value
+        self._text = self._indentation + value
     
     @property
     def indentation(self):
-        matches = re.match(r"^\s+", self._text)
+        return self._indentation
+    
+    @indentation.setter
+    def indentation(self, value):
+        self._indentation = value
+        self._text = value + self._syntax
+    
+    def _get_syntax(self, value):
+        return re.sub(r"^\s+", "", value)
+    
+    def _get_indent(self, value):
+        matches = re.match(r"^\s+", value)
         if matches:
             return matches.group(0)
         return ""
-
+    
     @property
     def is_from_clause(self):
         matches_normal = re.match(r'(?i)[\s,`\'\"]+from[\s,`\'\"]+', self._text)
