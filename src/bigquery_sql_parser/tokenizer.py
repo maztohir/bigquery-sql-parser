@@ -43,7 +43,7 @@ class Tokenizer:
 
     def _tokenize_pattern(self):
         return {
-            self.TOKENIZE_PARENTHESES: r"\w*\((?:[^()]|\([^.]*\))*\)",
+            self.TOKENIZE_PARENTHESES: r"\w*\((?:[^()]|\([\w\S\s]*?\))*\)",
             self.TOKENIZE_TRIPLE_QUOTE: r'"""[\w\S\s]*?"""',
         }[self.tokenize_type]
 

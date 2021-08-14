@@ -1,9 +1,11 @@
 from typing import List
-from src.bigquery_sql_parser.query import Query
 
 class Cte:
-    def __init__(self, text:str):
-        self.text = text
-        
-    def queries() -> List[Query]:
-        pass
+    def __init__(self, name:str, text:str):
+        self.text = self._remove_first_and_last_parenthesis(text)
+        self.name = name
+
+    def _remove_first_and_last_parenthesis(self, text):
+        if text.startswith("(") and text.endswith(")"):
+            text = text[1:-1]
+        return text
