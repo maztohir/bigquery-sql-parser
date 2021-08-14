@@ -4,6 +4,7 @@ from typing import List
 from src.bigquery_sql_parser.cte import Cte
 from src.bigquery_sql_parser.multiline import Multiline
 from src.bigquery_sql_parser.tokenizer import Tokenizer
+from src.bigquery_sql_parser.utils import read_file
 
 import re
 
@@ -13,6 +14,11 @@ class Script(Multiline):
     
     def __init__(self, text:str):
         self._text = text
+    
+    @classmethod
+    def from_file(cls, path):
+        text = read_file(path)
+        return cls(text)
     
     @property
     def text(self):

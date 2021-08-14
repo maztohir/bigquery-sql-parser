@@ -1,13 +1,19 @@
 import re
 from typing import List
 
+from .utils import read_file
 from .multiline import Multiline
 from .column import Column
 
 
 class Query(Multiline):
     def __init__(self, text:str):
-        super(Query, self).__init__(text)
+        super().__init__(text)
+        
+    @classmethod
+    def from_file(cls, path):
+        text = read_file(path)
+        return cls(text)
 
     @property
     def _column_area(self):
