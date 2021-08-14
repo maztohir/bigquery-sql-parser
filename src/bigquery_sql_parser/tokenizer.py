@@ -13,10 +13,18 @@ class TokenizedSyntax:
         self.childs = childs
 
 class Tokenizer:
-    def __init__(self, text, prefix="BQ00012_"):
+
+    TOKENIZE_PARENTHESES = "tokenize_parentheses"
+    TOKENIZE_TRIPLE_QUOTE = "tokenize_triple_quote"
+
+    def __init__(self, text, token_prefix="BQ00012_", tokenize_type=TOKENIZE_PARENTHESES):
         self.text = text
-        self.prefix = prefix
-        self.tokenized_text, self.knowledge = self._tokenize(text)
+        if tokenize_type == self.TOKENIZE_TRIPLE_QUOTE:
+            self.text = text.replace("'''", '"""')
+
+        self.token_prefix = token_prefix
+        self.tokenize_type = tokenize_type
+        self.tokenized_text, self.knowledge = self._tokenize(self.text)
 
     def translate_key(self, key, recursive=False):
         value = self.knowledge[key]
@@ -33,10 +41,16 @@ class Tokenizer:
             text = text[1:-1]
         return text
 
+    def _tokenize_pattern(self):
+        return {
+            self.TOKENIZE_PARENTHESES: r"\w*\((?:[^()]|\([^.]*\))*\)",
+            self.TOKENIZE_TRIPLE_QUOTE: r'"""[\w\S\s]*?"""',
+        }[self.tokenize_type]
+
     def _find_parenthesis(self, text):
-        FIND_PARENTHESIS_PATTERN = r"\w*\((?:[^()]|\([^.]*\))*\)"
+        LOWER_TOKENIZE_PATTERN = self._tokenize_pattern()
         return re.findall(
-            FIND_PARENTHESIS_PATTERN, self._remove_first_and_last_parenthesis(text)
+            LOWER_TOKENIZE_PATTERN, self._remove_first_and_last_parenthesis(text)
         )
 
     def _find_lowest_parenthesis(self, text):
@@ -56,7 +70,7 @@ class Tokenizer:
         return lowest
 
     def _find_keys(self, text):
-        KEY_PATTERN = r"({}\w+)".format(self.prefix)
+        KEY_PATTERN = r"({}\w+)".format(self.token_prefix)
         matches = re.findall(KEY_PATTERN, text)
         return matches
 
@@ -97,7 +111,7 @@ class Tokenizer:
         while self._find_parenthesis(text):
             lowests = self._find_lowest_parenthesis(text)
             for lowest in lowests:
-                token = self.prefix + hash_string(lowest)
+                token = self.token_prefix + hash_string(lowest)
                 knowledge[token] = lowest
                 text = text.replace(lowest, token)
 
