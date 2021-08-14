@@ -74,7 +74,7 @@ class Tokenizer:
         matches = re.findall(KEY_PATTERN, text)
         return matches
 
-    def _translate_text(self, text):
+    def translate_text(self, text):
         keys = self._find_keys(text)
         for key in keys:
             text = text.replace(key, self.translate_key(key, recursive=True))
@@ -82,7 +82,7 @@ class Tokenizer:
     
     def _extract_key(self, key, recursive=False) -> TokenizedSyntax:
         value = self.knowledge[key]
-        translated = self._translate_text(value)
+        translated = self.translate_text(value)
         keys = self._find_keys(value)
         knowledges = { key: self.knowledge[key] for key in keys }
         childs = []
@@ -96,7 +96,7 @@ class Tokenizer:
     @property
     def tokenized_syntax(self):
         tokenized_text = self.tokenized_text
-        translated = self._translate_text(tokenized_text)
+        translated = self.translate_text(tokenized_text)
         keys = self._find_keys(tokenized_text)
         knowledges = { key: self.knowledge[key] for key in keys }
         childs = []

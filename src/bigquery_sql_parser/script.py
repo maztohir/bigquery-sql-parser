@@ -26,17 +26,23 @@ class Script(Multiline):
     
     @property
     def blocks(self) -> List[Script]:
-        matches = re.findall(r"(?:[^.]+?);", self._text)
+        original_text   = self._text
+        tokenizer       = Tokenizer(original_text, tokenize_type=Tokenizer.TOKENIZE_TRIPLE_QUOTE)
+        tokenized_text  = tokenizer.tokenized_text
+
+        matches = re.findall(r"(?:[\w\S\s]+?);", tokenized_text)
         blocks = []
         for match in matches:
-            block = Script(match)
+            match_translated = tokenizer.translate_text(match)
+            block = Script(match_translated)
             blocks.append(block)
     
-        outside_match = re.sub(r"(?:[^.]+?);", "", self._text)
+        outside_match = re.sub(r"(?:[\w\S\s]+?);", "", tokenized_text)
         if outside_match:
             block_left = re.findall(r"\w+", outside_match)
             if block_left:
-                blocks.append(Script(outside_match))
+                outside_match_translated = tokenizer.translate_text(outside_match)
+                blocks.append(Script(outside_match_translated))
         
         return blocks
 
