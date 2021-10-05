@@ -1,8 +1,8 @@
 import re
 
 
-class Column(object):
-    def __init__(self, syntax):
+class Column:
+    def __init__(self, syntax:str):
         self.syntax = syntax
 
     @property

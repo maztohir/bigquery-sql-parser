@@ -1,13 +1,30 @@
-import re
+from __future__ import annotations
+from typing import List
 
 from .utils import hash_string
 
+import re
+class TokenizedSyntax:
+    def __init__(self, tokenized_text:str, translated_text:str, keys:List[str], knowledge:dict, childs:List[TokenizedSyntax]) -> None:
+        self.translated_text = translated_text
+        self.tokenized_text = tokenized_text
+        self.keys = keys
+        self.knowledge = knowledge
+        self.childs = childs
 
-class Tokenizer(object):
-    def __init__(self, syntax, prefix="BQ00012_"):
-        self.syntax = syntax
-        self.prefix = prefix
-        self.tokenized_syntax, self.knowledge = self._tokenize(syntax)
+class Tokenizer:
+
+    TOKENIZE_PARENTHESES = "tokenize_parentheses"
+    TOKENIZE_TRIPLE_QUOTE = "tokenize_triple_quote"
+
+    def __init__(self, text, token_prefix="BQ00012_", tokenize_type=TOKENIZE_PARENTHESES):
+        self.text = text
+        if tokenize_type == self.TOKENIZE_TRIPLE_QUOTE:
+            self.text = text.replace("'''", '"""')
+
+        self.token_prefix = token_prefix
+        self.tokenize_type = tokenize_type
+        self.tokenized_text, self.knowledge = self._tokenize(self.text)
 
     def translate_key(self, key, recursive=False):
         value = self.knowledge[key]
@@ -15,30 +32,36 @@ class Tokenizer(object):
             sub_keys = self._find_keys(value)
             for sub_key in sub_keys:
                 value = value.replace(
-                    sub_key, self.translate_key(sub_key, recursive=True)
+                    sub_key, self.translate_key(sub_key, recursive=recursive)
                 )
         return value
 
-    def _remove_first_and_last_parenthesis(self, syntax):
-        if syntax.startswith("(") and syntax.endswith(")"):
-            syntax = syntax[1:-1]
-        return syntax
+    def _remove_first_and_last_parenthesis(self, text):
+        if text.startswith("(") and text.endswith(")"):
+            text = text[1:-1]
+        return text
 
-    def _find_parenthesis(self, syntax):
-        FIND_PARENTHESIS_PATTERN = r"\w*\((?:[^()]*|\([^.]*\))*\)"
+    def _tokenize_pattern(self):
+        return {
+            self.TOKENIZE_PARENTHESES: r"\w*\((?:[^()]|\([\w\S\s]*?\))*\)",
+            self.TOKENIZE_TRIPLE_QUOTE: r'"""[\w\S\s]*?"""',
+        }[self.tokenize_type]
+
+    def _find_parenthesis(self, text):
+        LOWER_TOKENIZE_PATTERN = self._tokenize_pattern()
         return re.findall(
-            FIND_PARENTHESIS_PATTERN, self._remove_first_and_last_parenthesis(syntax)
+            LOWER_TOKENIZE_PATTERN, self._remove_first_and_last_parenthesis(text)
         )
 
-    def _find_lowest_parenthesis(self, syntax):
+    def _find_lowest_parenthesis(self, text):
         lowest = []
-        matches = self._find_parenthesis(syntax)
+        matches = self._find_parenthesis(text)
 
         if not matches:
-            lowest.append(syntax)
+            lowest.append(text)
 
         for match in matches:
-            if match == syntax:
+            if match == text:
                 lowest.append(match)
             else:
                 _lowest = self._find_lowest_parenthesis(match)
@@ -46,25 +69,50 @@ class Tokenizer(object):
 
         return lowest
 
-    def _find_keys(self, syntax):
-        KEY_PATTERN = r"({}\w+)".format(self.prefix)
-        matches = re.findall(KEY_PATTERN, syntax)
+    def _find_keys(self, text):
+        KEY_PATTERN = r"({}\w+)".format(self.token_prefix)
+        matches = re.findall(KEY_PATTERN, text)
         return matches
 
-    def _translate_syntax(self, syntax):
-        keys = self._find_keys(syntax)
+    def translate_text(self, text):
+        keys = self._find_keys(text)
         for key in keys:
-            syntax = syntax.replace(key, self.translate_key(key, recursive=True))
-        return syntax
+            text = text.replace(key, self.translate_key(key, recursive=True))
+        return text
+    
+    def _extract_key(self, key, recursive=False) -> TokenizedSyntax:
+        value = self.knowledge[key]
+        translated = self.translate_text(value)
+        keys = self._find_keys(value)
+        knowledges = { key: self.knowledge[key] for key in keys }
+        childs = []
 
-    def _tokenize(self, syntax):
+        if recursive:
+            for sub_key in keys:
+                child = self._extract_key(sub_key, recursive=recursive)
+                childs.append(child)
+        return TokenizedSyntax(value, translated, keys, knowledges, childs)
+    
+    @property
+    def tokenized_syntax(self):
+        tokenized_text = self.tokenized_text
+        translated = self.translate_text(tokenized_text)
+        keys = self._find_keys(tokenized_text)
+        knowledges = { key: self.knowledge[key] for key in keys }
+        childs = []
+        for sub_key in keys:
+            child = self._extract_key(sub_key, recursive=True)
+            childs.append(child)
+        return TokenizedSyntax(tokenized_text, translated, keys, knowledges, childs)        
+
+    def _tokenize(self, text):
         knowledge = {}
 
-        while self._find_parenthesis(syntax):
-            lowests = self._find_lowest_parenthesis(syntax)
+        while self._find_parenthesis(text):
+            lowests = self._find_lowest_parenthesis(text)
             for lowest in lowests:
-                token = self.prefix + hash_string(lowest)
+                token = self.token_prefix + hash_string(lowest)
                 knowledge[token] = lowest
-                syntax = syntax.replace(lowest, token)
+                text = text.replace(lowest, token)
 
-        return syntax, knowledge
+        return text, knowledge

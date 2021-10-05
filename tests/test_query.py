@@ -1,6 +1,6 @@
 import pytest
 
-from bigquery_sql_parser.query import Query
+from src.bigquery_sql_parser.query import Query
 
 
 def test_column_area_without_from():
