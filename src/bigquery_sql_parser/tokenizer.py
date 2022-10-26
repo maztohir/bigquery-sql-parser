@@ -15,6 +15,7 @@ class TokenizedSyntax:
 class Tokenizer:
 
     TOKENIZE_PARENTHESES = "tokenize_parentheses"
+    TOKENIZE_COLUMN_PARENTHESES = "tokenize_column_parentheses"
     TOKENIZE_TRIPLE_QUOTE = "tokenize_triple_quote"
 
     def __init__(self, text, token_prefix="BQ00012_", tokenize_type=TOKENIZE_PARENTHESES):
@@ -44,6 +45,7 @@ class Tokenizer:
     def _tokenize_pattern(self):
         return {
             self.TOKENIZE_PARENTHESES: r"\w*\((?:[^()]|\([\w\S\s]*?\))*\)",
+            self.TOKENIZE_COLUMN_PARENTHESES: r"\w*\s*\((?:[^()]|\([\w\S\s]*?\))*\)",
             self.TOKENIZE_TRIPLE_QUOTE: r'"""[\w\S\s]*?"""',
         }[self.tokenize_type]
 
