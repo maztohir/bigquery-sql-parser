@@ -1,14 +1,17 @@
 import re
 from typing import List
 
+
 from .utils import read_file
 from .multiline import Multiline
 from .column import Column
+from .tokenizer import Tokenizer
 
 
 class Query(Multiline):
     def __init__(self, text:str):
         super().__init__(text)
+        self.tokenizer = self._tokenize(text)
         
     @classmethod
     def from_file(cls, path):
@@ -18,7 +21,7 @@ class Query(Multiline):
     @property
     def _column_area(self):
         UNSEPARATED_COLUMN = r"(?i)(?:\s*select\s+)((?:(?![,\s]+from[`\s]+)[\S\s])*)(?:,?[,\s]+from[`\s]+)?"
-        matches = re.findall(UNSEPARATED_COLUMN, self.text)
+        matches = re.findall(UNSEPARATED_COLUMN, self.tokenizer.tokenized_text)
         if len(matches) > 1:
             raise ValueError("Query should contain only 1 SELECT statement")
 
@@ -28,6 +31,9 @@ class Query(Multiline):
 
         else:
             raise ValueError("SELECT statment not found")
+        
+    def _tokenize(self, text) -> Tokenizer:
+        return Tokenizer(text, tokenize_type=Tokenizer.TOKENIZE_COLUMN_PARENTHESES)
 
     @property
     def _column_syntax(self):
@@ -49,5 +55,5 @@ class Query(Multiline):
     @property
     def columns(self) -> List[Column]:
         column_syntaxes = self._column_syntax
-        columns = [Column(syntax) for syntax in column_syntaxes]
+        columns = [Column(self.tokenizer.translate_text(syntax)) for syntax in column_syntaxes]
         return columns

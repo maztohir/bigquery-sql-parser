@@ -2,11 +2,12 @@ import re
 
 
 class Column:
-    def __init__(self, syntax:str):
+    def __init__(self, syntax:str, name=None, value=None):
         self.syntax = syntax
+        self.name = self.find_name()
+        self.value = self.find_value()
 
-    @property
-    def name(self):
+    def find_name(self):
         ALIAS_NAME_PATTERN = r"(\w*)$"
         matches = re.findall(ALIAS_NAME_PATTERN, self.syntax)
         if matches and matches != [""]:
@@ -14,8 +15,7 @@ class Column:
         else:
             return self.syntax
 
-    @property
-    def value(self):
+    def find_value(self):
         CHECK_AS_PATTERN = r"(?i)(\s+as\s+)"
         VALUE_AS_PATTERN = r"(?i)(.*)(?:\s+as\s?)"
 
