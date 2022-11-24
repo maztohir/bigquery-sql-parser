@@ -1,10 +1,10 @@
 from __future__ import annotations
 from typing import List
 
-from src.bigquery_sql_parser.cte import Cte
-from src.bigquery_sql_parser.multiline import Multiline
-from src.bigquery_sql_parser.tokenizer import Tokenizer
-from src.bigquery_sql_parser.utils import read_file
+from .cte import Cte
+from .multiline import Multiline
+from .tokenizer import Tokenizer
+from .utils import read_file
 
 import re
 
